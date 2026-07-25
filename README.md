@@ -4,7 +4,7 @@
 Convertisseur ultra rapide d'URLs GitHub vers raw.githubusercontent.com  
 Colle jusqu'à 25 liens, 1 clic, tout est copié dans le presse-papier.
 
-### [🚀 Utiliser l'outil en ligne](https://pierreg78-maker.github.io/github-to-raw-converter/)
+### [Utiliser l'outil en ligne](https://pierreg78-maker.github.io/convertisseur_github_vers_raw/)
 
 ---
 
