@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>GitHub → RawGitHubUser Converter</title>
+<style>
+  body { font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 20px; background: #0d1117; color: #c9d1d9; }
+  textarea { width: 100%; height: 300px; background: #161b22; color: #c9d1d9; border: 1px solid #30363d; border-radius: 6px; padding: 12px; font-family: monospace; resize: vertical; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+  button { background: #238636; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 15px; }
+  button:hover { background: #2ea043; }
+  button.danger { background: #da3633; }
+  button.danger:hover { background: #f85149; }
+  button.secondary { background: #21262d; border: 1px solid #30363d; }
+  button.secondary:hover { background: #30363d; }
+  #status { margin-top: 10px; color: #7ee787; min-height: 20px; }
+</style>
+</head>
+<body>
+  <h1>Convertisseur GitHub → Raw</h1>
+  <p>Colle jusqu'à 25 URLs GitHub, 1 par ligne. Rien n’est envoyé sur un serveur.</p>
+  
+  <textarea id="input" placeholder="https://github.com/user/repo/blob/main/file.js
+https://github.com/user/repo/blob/dev/src/file.py"></textarea>
+  
+  <div class="btns">
+    <button onclick="convert()">1. Convertir et Copier</button>
+    <button class="secondary" onclick="copyOnly()">2. Re-copier</button>
+    <button class="danger" onclick="clearAll()">3. Effacer tout</button>
+  </div>
+  <div id="status"></div>
+
+<script>
+function toRaw(url) {
+  return url
+    .trim()
+    .replace('github.com', 'raw.githubusercontent.com')
+    .replace('/blob/', '/');
+}
+
+function convert() {
+  const input = document.getElementById('input').value;
+  const lines = input.split('\n').filter(l => l.trim() !== '').slice(0, 25);
+  
+  if(lines.length === 0) {
+    setStatus('❌ Colle au moins 1 URL', true);
+    return;
+  }
+
+  const converted = lines.map(toRaw);
+  const result = converted.join('\n');
+  
+  document.getElementById('input').value = result; // remplace par le résultat
+  copyToClipboard(result);
+  setStatus(`✅ ${converted.length} URLs converties et copiées dans le presse-papier`);
+}
+
+function copyOnly() {
+  const text = document.getElementById('input').value;
+  if(!text) return setStatus('❌ Rien à copier', true);
+  copyToClipboard(text);
+  setStatus('📋 Contenu re-copié');
+}
+
+function clearAll() {
+  if(confirm('Effacer toutes les URLs ?')) {
+    document.getElementById('input').value = '';
+    setStatus('🗑️ Tout effacé');
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).catch(() => {
+    setStatus('❌ La copie auto a échoué. Fais Ctrl+C', true);
+  });
+}
+
+function setStatus(msg, isError = false) {
+  const el = document.getElementById('status');
+  el.innerText = msg;
+  el.style.color = isError ? '#f85149' : '#7ee787';
+  setTimeout(() => el.innerText = '', 4000);
+}
+
+// Raccourci Ctrl+Enter pour convertir
+document.getElementById('input').addEventListener('keydown', e => {
+  if(e.ctrlKey && e.key === 'Enter') convert();
+});
+</script>
+</body>
+</html>
